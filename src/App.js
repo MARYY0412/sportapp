@@ -4,14 +4,23 @@ import styled from 'styled-components'
 import Home from './pages/Home';
 import Running from './pages/Running'
 import Bike from './pages/Bike'
-import Profile from './pages/Profile'
+import Profile from './pages/user/Profile'
+import Login from './pages/user/Login';
+import Registration from './pages/user/Registration';
 
 import {FiUserCheck} from 'react-icons/fi'
 import {IoMdHome} from 'react-icons/io'
 import {MdDirectionsBike} from 'react-icons/md'
 import {FaRunning} from 'react-icons/fa'
+import { useState } from 'react';
+
+
 
 function App() {
+
+  const [user, setUser] = useState(null);
+
+
   return (
       <div className="App">
         
@@ -27,6 +36,8 @@ function App() {
           <Route path="/bike" element={<Bike />}/>
           <Route path="/running" element={<Running />}/>
           <Route path="/Profile" element={<Profile />}/>
+          <Route path="/login" element={<Login />}/>
+          <Route path="/registration" element={<Registration />}/>
         </Routes>
 
         <Footer>
@@ -50,6 +61,13 @@ const Navigation = styled.div`
   width: 90%;
   display: flex;
   justify-content: space-evenly;
+
+
+  @media only screen and (max-width: 700px) {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
 `
 
 const NavbarLink = styled(Link)`
@@ -69,6 +87,10 @@ const NavbarLink = styled(Link)`
   .icon{
     font-size: 5vh;
     margin: 0rem 1rem;
+  }
+
+  @media only screen and (max-width: 700px) {
+    width: 12rem;
   }
 `
 
