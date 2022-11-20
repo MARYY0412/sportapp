@@ -1,12 +1,15 @@
 import './App.css';
 import { Link, Route, Routes }  from 'react-router-dom'
 import styled from 'styled-components'
+
+
 import Home from './pages/Home';
 import Running from './pages/Running'
 import Bike from './pages/Bike'
 import Profile from './pages/user/Profile'
 import Login from './pages/user/Login';
 import Registration from './pages/user/Registration';
+import ForgotPassword from './pages/user/ForgotPassword'
 
 import {FiUserCheck} from 'react-icons/fi'
 import {IoMdHome} from 'react-icons/io'
@@ -23,7 +26,10 @@ function App() {
 
   return (
       <div className="App">
-        
+        <UserNav>
+          <Link to='/login'>login</Link>
+          <Link to='/register'>register</Link>
+        </UserNav>
         <Navigation>
           <NavbarLink to="/"><IoMdHome className='icon'/>HOME</NavbarLink>
           <NavbarLink to="/bike"><MdDirectionsBike className='icon'/>BIKE</NavbarLink>
@@ -37,7 +43,8 @@ function App() {
           <Route path="/running" element={<Running />}/>
           <Route path="/Profile" element={<Profile />}/>
           <Route path="/login" element={<Login />}/>
-          <Route path="/registration" element={<Registration />}/>
+          <Route path="/register" element={<Registration />}/>
+          <Route path="/forgotpassword" element={<ForgotPassword />}/>
         </Routes>
 
         <Footer>
@@ -50,9 +57,22 @@ function App() {
 }
 
 export default App;
+const UserNav = styled.div`
+  width: 90%;
+  background-color: rgba(255,255,255, 0.8);
+  backdrop-filter: blur(2px);
+
+  text-align: right;
+  margin-top: 5vh;
+  a{
+    color: black;
+    text-decoration: none;
+    margin: 2vh;
+  }
+`
 
 const Navigation = styled.div`
-  margin: 2rem 0rem;
+  margin: 0rem 0rem 3rem 0rem;
   padding: 2rem;
 
   background-color: rgba(255,255,255, 0.8);
@@ -63,7 +83,7 @@ const Navigation = styled.div`
   justify-content: space-evenly;
 
 
-  @media only screen and (max-width: 700px) {
+  @media only screen and (max-width: 900px) {
     display: flex;
     flex-direction: column;
     align-items: center;

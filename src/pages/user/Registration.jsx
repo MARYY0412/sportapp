@@ -1,6 +1,6 @@
 import React, {useState} from 'react'
 import styled from 'styled-components'
-
+import {Link} from 'react-router-dom'
 
 function Registration() {
 
@@ -108,8 +108,8 @@ function Registration() {
       <Button type='submit' onClick={submit}>REGISTER</Button>
       
       <InfoSection>
-          <a href='#'>forgot password?</a>
-          <a href='#'>register</a>
+          <Link to="/forgotpassword">forgot password</Link>
+          <Link to="/login">login</Link>
           <p className='error-p'>{error}</p>
       </InfoSection>
       

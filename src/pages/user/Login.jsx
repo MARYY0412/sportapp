@@ -1,6 +1,6 @@
 import React, {useState} from 'react'
 import styled from 'styled-components'
-
+import {Link} from 'react-router-dom';
 function Login() {
 
   const [username, setUsername] = useState('');
@@ -52,8 +52,8 @@ function Login() {
             <label htmlFor="remember">Remember me</label>
             <input type="checkbox" name="remember"></input> 
           </span> 
-          <a href='#'>forgot password?</a>
-          <a href='#'>register</a>
+          <Link to="/forgotpassword">forgot password</Link>
+          <Link to="/register">register</Link>
           <p className='error-p'>{error}</p>
       </InfoSection>
       
@@ -122,6 +122,7 @@ const InfoSection = styled.div`
       display: flex;
       align-items: center;
     }
+    //stylizowanie elementów Link
     a
     {
       text-align: center;
