@@ -9,6 +9,71 @@ function Registration() {
   const [password2, setPassword2] = useState('');
   const [email, setEmail] = useState('');
 
+  const [error, setError] = useState('');
+  const [isValid, setIsValid] = useState(false);
+
+
+  const checkValues = () => {
+
+    if(password === '' || username === '' || password2 === '' || email === '')
+      setError('Uzupełnij wszystkie pola!')
+    //CHECK PASSWORDS
+    else if(password.length < 8)
+      setError('Hasło nie może być krótsze niż 8 słów')
+    else if(password !== password2)
+      setError('Hasło muszą być takie same!')
+    else if(!checkIsUpperCase(password))
+      setError("Hasło musi zawierać chociaż jedną dużą literę!")
+    else if(!checkIsLowerCase(password))
+      setError("Hasło musi zawierać chociaż jedną małą literę!")
+    else if(!checkSpecialCharacter(password))
+      setError("Hasło musi zawierać chociaż jeden znak specjalny!")
+    else if(!checkNumber(password))
+      setError("Hasło musi zawierać chociaż jedną liczbę!")
+    else if(!isValidEmail(email))
+      setError("Wpisz odpowiedni email!")
+    else
+    {
+      setIsValid(true);
+      setError("");
+    }
+  }
+
+  const submit = () => {
+    checkValues();
+  }
+
+
+
+  //FUNKCJE POTRZEBNE DO WALIDACJI FORMULARZA
+
+  //WALIDACJA HASŁA
+  //sprawdzenie czy password posiada dużą literę
+  const checkIsUpperCase = (word) => {
+    return Boolean(word.match(/[A-Z]/));
+  }
+  //sprawdzenie czy password posiada chociaż jedną mała literę
+  const checkIsLowerCase = (word) => {
+    return Boolean(word.match(/[a-z]/));
+  }
+   //sprawdzenie czy password posiada chociaż jeden znak specjalny
+  const checkSpecialCharacter = (word) => {
+    const regex = /^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{8,}$/
+    return regex.test(password);
+  }
+  //sprawdzenie czy password posiada chociaż jedną liczbę
+  const checkNumber = (word) => {
+    const regex = /\d/;
+    return regex.test(password);
+  }
+
+  //WALIDACJA EMAILA
+  const isValidEmail = (email) => {
+    const regex = /^\S+@\S+\.\S+$/;
+    return regex.test(email);
+  }
+
+
   return (
     <Container>
 
@@ -21,14 +86,14 @@ function Registration() {
 
       <div>
         <p>Password</p>
-        <input type="password" value={password} onChange={(e) => {
+        <input type="text" value={password} onChange={(e) => {
           setPassword(e.target.value)
         }}></input>
       </div>
       
       <div>
         <p>Repeat password</p>
-        <input type="password" value={password2} onChange={(e) => {
+        <input type="text" value={password2} onChange={(e) => {
           setPassword2(e.target.value)
         }}></input>
       </div>
@@ -40,11 +105,12 @@ function Registration() {
         }}></input>
       </div>
 
-      <Button type='submit'>REGISTER</Button>
+      <Button type='submit' onClick={submit}>REGISTER</Button>
       
       <InfoSection>
           <a href='#'>forgot password?</a>
           <a href='#'>register</a>
+          <p className='error-p'>{error}</p>
       </InfoSection>
       
     </Container>
@@ -58,7 +124,7 @@ const Container = styled.div`
   backdrop-filter: blur(2px);
 
   width: 20rem;
-  height: 35rem;
+  height: 40rem;
 
   display: flex;
   flex-direction: column;
@@ -121,5 +187,11 @@ const InfoSection = styled.div`
     a:hover
     {
       background-color: white;
+    }
+
+    .error-p{
+      text-align: center;
+      color: red;
+      font-size: 15px;
     }
 `

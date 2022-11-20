@@ -5,6 +5,29 @@ function Login() {
 
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  
+  const [error, setError] = useState('');
+  const [isValid, setIsValid] = useState(false);
+  
+  const checkValues = () => {
+
+   
+
+  }
+
+  const submit = () => {
+    checkValues();
+  }
+
+
+
+
+
+
+  //FUNKCJE POTRZEBNE DO WALIDACJI FORMULARZA
+
+
+
   return (
     <Container>
 
@@ -22,7 +45,7 @@ function Login() {
         }}></input>
       </div>
       
-      <Button type='submit'>LOGIN</Button>
+      <Button type='submit' onClick={submit}>LOGIN</Button>
       
       <InfoSection>
           <span>
@@ -31,6 +54,7 @@ function Login() {
           </span> 
           <a href='#'>forgot password?</a>
           <a href='#'>register</a>
+          <p className='error-p'>{error}</p>
       </InfoSection>
       
     </Container>
@@ -44,7 +68,7 @@ const Container = styled.div`
   backdrop-filter: blur(2px);
 
   width: 20rem;
-  height: 35rem;
+  height: 40rem;
 
   display: flex;
   flex-direction: column;
@@ -110,5 +134,10 @@ const InfoSection = styled.div`
     a:hover
     {
       background-color: white;
+    }
+
+    .error-p{
+      color: red;
+      font-size: 10px;
     }
 `
