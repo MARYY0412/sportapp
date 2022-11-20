@@ -1,6 +1,9 @@
 import React, {useState} from 'react'
 import styled from 'styled-components'
 import {Link} from 'react-router-dom';
+
+//firebase
+import {SignInWithGoogle} from './../../Firebase'
 function Login() {
 
   const [username, setUsername] = useState('');
@@ -54,6 +57,7 @@ function Login() {
           </span> 
           <Link to="/forgotpassword">forgot password</Link>
           <Link to="/register">register</Link>
+          <button className='google-button' onClick={SignInWithGoogle}>zaloguj za pomocą Google</button>
           <p className='error-p'>{error}</p>
       </InfoSection>
       
@@ -136,7 +140,12 @@ const InfoSection = styled.div`
     {
       background-color: white;
     }
-
+    //stylizowanie przycisku logowania Google
+    .google-button{
+      padding: 1rem;
+      border: none;
+      cursor: pointer;
+    }
     .error-p{
       color: red;
       font-size: 10px;

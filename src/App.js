@@ -26,10 +26,12 @@ function App() {
 
   return (
       <div className="App">
+
         <UserNav>
-          <Link to='/login'>login</Link>
-          <Link to='/register'>register</Link>
+          <Link to='/login'>LOGIN</Link>
+          <Link to='/register'>REGISTER</Link>
         </UserNav>
+
         <Navigation>
           <NavbarLink to="/"><IoMdHome className='icon'/>HOME</NavbarLink>
           <NavbarLink to="/bike"><MdDirectionsBike className='icon'/>BIKE</NavbarLink>
@@ -57,22 +59,38 @@ function App() {
 }
 
 export default App;
-const UserNav = styled.div`
-  width: 90%;
-  background-color: rgba(255,255,255, 0.8);
-  backdrop-filter: blur(2px);
 
-  text-align: right;
-  margin-top: 5vh;
+const UserNav = styled.div`
+  width: 100%;
+  height: 4rem;
+  background-color: white;
+  backdrop-filter: blur(2px);
+  
+  display: flex;
+  flex-direction: row-reverse;
+  align-items: center;
   a{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 10rem;
+    height: 100%;
     color: black;
     text-decoration: none;
-    margin: 2vh;
+    font-size: 2vh;
+    font-family: 'Arial';
+    padding: 2vh;
+
+    letter-spacing: 2px;
+    transition: 2s all;
+  }
+  a:hover{
+    background-color: rgba(15,100,150, 0.2);
   }
 `
 
 const Navigation = styled.div`
-  margin: 0rem 0rem 3rem 0rem;
+  margin: 3rem 0rem;
   padding: 2rem;
 
   background-color: rgba(255,255,255, 0.8);
