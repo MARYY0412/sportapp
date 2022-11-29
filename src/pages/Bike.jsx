@@ -1,4 +1,4 @@
-import React, { useState, useReducer } from "react";
+import React, { useState, useReducer, useEffect } from "react";
 import styled from "styled-components";
 import uuid from "react-uuid";
 
@@ -8,14 +8,17 @@ const reducer = (state, action) => {
   switch (action.type) {
     case "setDate":
       return {
+        ...state,
         [action.field]: action.payload,
       };
     case "setTime":
       return {
+        ...state,
         [action.field]: action.payload,
       };
     case "setDistance":
       return {
+        ...state,
         [action.field]: action.payload,
       };
     default:
@@ -24,27 +27,12 @@ const reducer = (state, action) => {
 };
 
 function Bike() {
-  const [state = "", dispatch] = useReducer(reducer, {
-    timeOfActivity: 0,
-    dateOfActivity: "",
-    distanceOfActivity: 0,
-  });
+  const [activities, setActivities] = useState([]);
+  const [state, dispatch] = useReducer(reducer, {});
 
-  const [bikeActivities, setBikeActivities] = useState([
-    { name: "activity 1" },
-    { name: "activity 2" },
-    { name: "activity 1" },
-    { name: "activity 2" },
-    { name: "activity 1" },
-    { name: "activity 2" },
-    { name: "activity 1" },
-    { name: "activity 2" },
-    { name: "activity 2" },
-    { name: "activity 2" },
-    { name: "activity 2" },
-    { name: "activity 2" },
-    { name: "activity 2" },
-  ]);
+  useEffect(() => {
+    getItemsFromBackend();
+  }, []);
 
   const sendItemToBackend = (item) => {
     fetch("http://localhost:8888/bikeActivities", {
@@ -55,18 +43,37 @@ function Bike() {
       },
     });
   };
+  const deleteItemFromBackend = (id) => {
+    fetch(`http://localhost:8888/bikeActivities/${id}`, {
+      method: "DELETE",
+    });
+  };
+  const getItemsFromBackend = async () => {
+    return fetch("http://127.0.0.1:8888/bikeActivities")
+      .then((res) => res.json())
+      .then((data) => setActivities(data.bikeActivities));
+  };
+  const editItemInBackend = () => {};
 
-  const submit = (e) => {
+  const submit = async (e) => {
     e.preventDefault();
-    // setBikeActivities((current) => [...current, "Carl"]);
-    // const bikeActivity = {
-    //   name: "siemka",
-    // };
-    // sendItemToBackend(bikeActivity);
 
-    console.log(state.dateOfActivity);
-    console.log(state.timeOfActivity);
-    console.log(state.distanceOfActivity);
+    if (
+      state.dateOfActivity === undefined ||
+      state.timeOfActivity === undefined ||
+      state.distanceOfActivity === undefined
+    )
+      alert("Uzupełnij wszystkie pola!");
+    else {
+      const bikeActivity = {
+        id: uuid(),
+        timeOfActivity: state.timeOfActivity,
+        dateOfActivity: state.dateOfActivity,
+        distanceOfActivity: state.distanceOfActivity,
+      };
+      setActivities((current) => [...current, bikeActivity]);
+      sendItemToBackend(bikeActivity);
+    }
   };
 
   return (
@@ -85,6 +92,7 @@ function Bike() {
               });
             }}
             name="dateOfActivity"
+            defaultValue={state.dateOfActivity}
           />
         </div>
         <div>
@@ -100,6 +108,7 @@ function Bike() {
             }}
             name="timeOfActivity"
             min="0"
+            defaultValue={state.timeOfActivity}
           />
         </div>
         <div>
@@ -115,6 +124,7 @@ function Bike() {
             }}
             name="distanceOfActivity"
             min="0"
+            defaultValue={state.distanceOfActivity}
           />
         </div>
         <div>
@@ -136,17 +146,31 @@ function Bike() {
               <th>ŚR. TEMPO</th>
               <th>OPERATIONS</th>
             </tr>
-            {bikeActivities.map((item, index) => {
+            {activities.map((item, index) => {
               return (
-                <tr key={uuid()}>
+                <tr key={item.id}>
                   <td>{index + 1}</td>
-                  <td>{item.name}</td>
-                  <td>{item.name}</td>
-                  <td>{item.name}</td>
-                  <td>{item.name}</td>
-                  <td>{item.name}</td>
+                  <td>{item.dateOfActivity}</td>
+                  <td>{item.timeOfActivity}</td>
+                  <td>{item.distanceOfActivity}</td>
+                  <td>xxx</td>
+                  <td>xxx</td>
                   <Operations>
-                    <ImCross />
+                    <button
+                      id={item.id}
+                      onClick={(e) => {
+                        const filtered = activities.filter((obj) => {
+                          return obj.id !== e.target.id;
+                        });
+
+                        setActivities(filtered);
+
+                        deleteItemFromBackend(item.id);
+                      }}
+                    >
+                      delete
+                      {/* <ImCross/> */}
+                    </button>
                   </Operations>
                 </tr>
               );
@@ -248,13 +272,24 @@ const Table = styled.table`
     background-color: white;
   }
 `;
+
 const Operations = styled.td`
   display: flex;
   justify-content: right;
   cursor: pointer;
   transition: 1s all;
 
-  :hover {
+  button {
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    transition: 1s all;
+    padding: 2vh;
+    cursor: pointer;
+  }
+  button:hover {
     color: red;
   }
 `;
