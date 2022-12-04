@@ -4,17 +4,73 @@ import uuid from "react-uuid";
 
 const reducer = (state, action) => {
   switch (action.type) {
+    case "setDate":
+      return {
+        ...state,
+        [action.field]: action.payload,
+      };
+    case "setTime":
+      return {
+        ...state,
+        [action.field]: action.payload,
+      };
+    case "setDistance":
+      return {
+        ...state,
+        [action.field]: action.payload,
+      };
     default:
       return state;
   }
 };
 
 function Running() {
-  const [state, dispatch] = useReducer({});
+  const [state, dispatch] = useReducer(reducer, {});
   const [activities, setActivities] = useState([]);
 
-  const deleteItemFromBackend = (id) => {};
-  const submit = async (e) => {};
+  useEffect(() => {
+    getItemsFromBackend();
+  }, []);
+  const sendItemToBackend = (item) => {
+    fetch("http://localhost:8888/runningActivities", {
+      method: "POST",
+      body: JSON.stringify(item),
+      headers: {
+        "Content-type": "application/json",
+      },
+    });
+  };
+  const deleteItemFromBackend = (id) => {
+    fetch(`http://localhost:8888/${id}`, {
+      method: "DELETE",
+    });
+  };
+  const getItemsFromBackend = () => {
+    fetch("http://127.0.0.1:8888/runningActivities")
+      .then((response) => response.json())
+      .then((data) => setActivities(data.runningActivities));
+  };
+  const submit = async (e) => {
+    e.preventDefault();
+
+    if (
+      state.dateOfActivity === undefined ||
+      state.timeOfActivity === undefined ||
+      state.distanceOfActivity === undefined
+    )
+      alert("Uzupełnij wszystkie pola!");
+    else {
+      const runningActivity = {
+        id: uuid(),
+        timeOfActivity: state.timeOfActivity,
+        dateOfActivity: state.dateOfActivity,
+        distanceOfActivity: state.distanceOfActivity,
+      };
+      setActivities((current) => [...current, runningActivity]);
+      sendItemToBackend(runningActivity);
+    }
+  };
+
   return (
     <Container>
       <h2>Dodaj aktywność</h2>
@@ -126,9 +182,20 @@ export default Running;
 const Container = styled.div`
   background-color: rgba(255, 255, 255, 0.8);
   backdrop-filter: blur(2px);
+  width: 60%;
+  text-align: center;
 
-  width: 90%;
-  height: 40rem;
+  padding-top: 1rem;
+  font-family: "Quicksand", sans-serif;
+  font-weight: 600;
+  @media only screen and (max-width: 1200px) {
+    width: 90%;
+  }
+
+  > div {
+    height: 30rem;
+    overflow: auto;
+  }
 `;
 const Form = styled.form`
   width: 100%;

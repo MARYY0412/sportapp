@@ -1,8 +1,8 @@
 import React, { useState, useReducer, useEffect } from "react";
 import styled from "styled-components";
 import uuid from "react-uuid";
-
-import { ImCross } from "react-icons/im";
+import EditActivityPopup from "../components/EditActivityPopup";
+import Activity from "../components/Activity";
 // https://medium.com/swlh/usereducer-form-example-16675fa60229
 const reducer = (state, action) => {
   switch (action.type) {
@@ -27,13 +27,18 @@ const reducer = (state, action) => {
 };
 
 function Bike() {
-  const [activities, setActivities] = useState([]);
   const [state, dispatch] = useReducer(reducer, {});
 
+  const [activities, setActivities] = useState([]);
+  const [openEditPopup, setOpenEditPopup] = useState(false);
+  //zmienna po kliknięciu "edytuj" przyjmuje id danej aktywności,
+  //aby po wprowadzeniu zmian w popupie za jej pomocą ustawić, którą aktywność
+  //z listy edytować.
+  const [editId, setEditId] = useState("");
   useEffect(() => {
     getItemsFromBackend();
   }, []);
-
+  //komunikacja z backendem
   const sendItemToBackend = (item) => {
     fetch("http://localhost:8888/bikeActivities", {
       method: "POST",
@@ -53,8 +58,7 @@ function Bike() {
       .then((res) => res.json())
       .then((data) => setActivities(data.bikeActivities));
   };
-  const editItemInBackend = () => {};
-
+  //obsługa formularza
   const submit = async (e) => {
     e.preventDefault();
 
@@ -75,7 +79,27 @@ function Bike() {
       sendItemToBackend(bikeActivity);
     }
   };
-
+  const setTime = (e) => {
+    dispatch({
+      type: "setTime",
+      field: e.target.name,
+      payload: e.target.value,
+    });
+  };
+  const setDate = (e) => {
+    dispatch({
+      type: "setDate",
+      field: e.target.name,
+      payload: e.target.value,
+    });
+  };
+  const setDistance = (e) => {
+    dispatch({
+      type: "setDistance",
+      field: e.target.name,
+      payload: e.target.value,
+    });
+  };
   return (
     <Container>
       <h2>Dodaj aktywność</h2>
@@ -84,13 +108,7 @@ function Bike() {
           <p>DATA</p>
           <input
             type="date"
-            onChange={(e) => {
-              dispatch({
-                type: "setDate",
-                field: e.target.name,
-                payload: e.target.value,
-              });
-            }}
+            onChange={setDate}
             name="dateOfActivity"
             defaultValue={state.dateOfActivity}
           />
@@ -99,42 +117,42 @@ function Bike() {
           <p>CZAS</p>
           <input
             type="number"
-            onChange={(e) => {
-              dispatch({
-                type: "setTime",
-                field: e.target.name,
-                payload: e.target.value,
-              });
-            }}
+            onChange={setTime}
             name="timeOfActivity"
             min="0"
             defaultValue={state.timeOfActivity}
+            placeholder="Podaj czas w minutach"
           />
         </div>
         <div>
           <p>DYSTANS</p>
           <input
             type="number"
-            onChange={(e) => {
-              dispatch({
-                type: "setDistance",
-                field: e.target.name,
-                payload: e.target.value,
-              });
-            }}
+            onChange={setDistance}
             name="distanceOfActivity"
             min="0"
             defaultValue={state.distanceOfActivity}
+            placeholder="Podaj dystans w metrach"
           />
         </div>
         <div>
-          {" "}
           <button type="submit" onClick={submit}>
             dodaj
           </button>
         </div>
       </Form>
       <div>
+        <EditActivityPopup
+          open={openEditPopup}
+          setActivities={setActivities}
+          editId={editId}
+          activities={activities}
+          setOpenEditPopup={setOpenEditPopup}
+          sendItemToBackend={sendItemToBackend}
+          // item={activities.filter((obj) => {
+          //   if (obj.id === editId) console.log(obj);
+          // })}
+        />
         <Table>
           <tbody>
             <tr>
@@ -148,31 +166,18 @@ function Bike() {
             </tr>
             {activities.map((item, index) => {
               return (
-                <tr key={item.id}>
-                  <td>{index + 1}</td>
-                  <td>{item.dateOfActivity}</td>
-                  <td>{item.timeOfActivity}</td>
-                  <td>{item.distanceOfActivity}</td>
-                  <td>xxx</td>
-                  <td>xxx</td>
-                  <Operations>
-                    <button
-                      id={item.id}
-                      onClick={(e) => {
-                        const filtered = activities.filter((obj) => {
-                          return obj.id !== e.target.id;
-                        });
-
-                        setActivities(filtered);
-
-                        deleteItemFromBackend(item.id);
-                      }}
-                    >
-                      delete
-                      {/* <ImCross/> */}
-                    </button>
-                  </Operations>
-                </tr>
+                <Activity
+                  key={item.id}
+                  item={item}
+                  index={index}
+                  activities={activities}
+                  setActivities={setActivities}
+                  deleteItemFromBackend={deleteItemFromBackend}
+                  setOpenEditPopup={setOpenEditPopup}
+                  openEditPopup={openEditPopup}
+                  setEditId={setEditId}
+                  sendItemToBackend={sendItemToBackend}
+                />
               );
             })}
           </tbody>
@@ -201,6 +206,8 @@ const Container = styled.div`
     height: 30rem;
     overflow: auto;
   }
+  //ustawiamy aby popup do edytowania się wyświetlał odpowiednio
+  /* position: relative; */
 `;
 
 const Form = styled.form`
@@ -262,34 +269,9 @@ const Table = styled.table`
     font-size: 12px;
   }
 
-  th,
-  td {
+  th {
     text-align: left;
     padding: 16px;
     white-space: nowrap;
-  }
-  tr:nth-child(even) {
-    background-color: white;
-  }
-`;
-
-const Operations = styled.td`
-  display: flex;
-  justify-content: right;
-  cursor: pointer;
-  transition: 1s all;
-
-  button {
-    border: none;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    transition: 1s all;
-    padding: 2vh;
-    cursor: pointer;
-  }
-  button:hover {
-    color: red;
   }
 `;
