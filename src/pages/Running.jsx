@@ -261,8 +261,7 @@ const Form = styled.form`
     align-items: center;
     justify-content: center;
     > input {
-      height: 3vh;
-      width: 10rem;
+      width: 60%;
     }
   }
 
@@ -307,10 +306,12 @@ const Summary = styled.div`
   }
 
   > div {
+    width: 100%;
     display: flex;
     justify-content: space-evenly;
     * {
-      width: 8rem;
+      width: 100%;
+      text-align: center;
     }
   }
 `;
