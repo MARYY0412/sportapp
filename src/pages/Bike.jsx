@@ -3,7 +3,7 @@ import styled from "styled-components";
 import uuid from "react-uuid";
 import EditActivityPopup from "../components/EditActivityPopup";
 import Activity from "../components/Activity";
-// https://medium.com/swlh/usereducer-form-example-16675fa60229
+
 const reducer = (state, action) => {
   switch (action.type) {
     case "setDate":
@@ -28,8 +28,8 @@ const reducer = (state, action) => {
 
 function Bike() {
   const [state, dispatch] = useReducer(reducer, {});
-
   const [activities, setActivities] = useState([]);
+  //edycja taska
   const [openEditPopup, setOpenEditPopup] = useState(false);
   //zmienna po kliknięciu "edytuj" przyjmuje id danej aktywności,
   //aby po wprowadzeniu zmian w popupie za jej pomocą ustawić, którą aktywność
@@ -79,26 +79,32 @@ function Bike() {
       sendItemToBackend(bikeActivity);
     }
   };
-  const setTime = (e) => {
-    dispatch({
-      type: "setTime",
-      field: e.target.name,
-      payload: e.target.value,
-    });
-  };
-  const setDate = (e) => {
-    dispatch({
-      type: "setDate",
-      field: e.target.name,
-      payload: e.target.value,
-    });
-  };
-  const setDistance = (e) => {
-    dispatch({
-      type: "setDistance",
-      field: e.target.name,
-      payload: e.target.value,
-    });
+  const changeInputsValues = (e) => {
+    switch (e.target.name) {
+      case "dateOfActivity":
+        dispatch({
+          type: "setDate",
+          field: e.target.name,
+          payload: e.target.value,
+        });
+        break;
+      case "timeOfActivity":
+        dispatch({
+          type: "setTime",
+          field: e.target.name,
+          payload: e.target.value,
+        });
+        break;
+      case "distanceOfActivity":
+        dispatch({
+          type: "setDistance",
+          field: e.target.name,
+          payload: e.target.value,
+        });
+        break;
+      default:
+        break;
+    }
   };
   return (
     <Container>
@@ -108,7 +114,7 @@ function Bike() {
           <p>DATA</p>
           <input
             type="date"
-            onChange={setDate}
+            onChange={changeInputsValues}
             name="dateOfActivity"
             defaultValue={state.dateOfActivity}
           />
@@ -117,7 +123,7 @@ function Bike() {
           <p>CZAS</p>
           <input
             type="number"
-            onChange={setTime}
+            onChange={changeInputsValues}
             name="timeOfActivity"
             min="0"
             defaultValue={state.timeOfActivity}
@@ -128,7 +134,7 @@ function Bike() {
           <p>DYSTANS</p>
           <input
             type="number"
-            onChange={setDistance}
+            onChange={changeInputsValues}
             name="distanceOfActivity"
             min="0"
             defaultValue={state.distanceOfActivity}
@@ -149,9 +155,6 @@ function Bike() {
           activities={activities}
           setOpenEditPopup={setOpenEditPopup}
           sendItemToBackend={sendItemToBackend}
-          // item={activities.filter((obj) => {
-          //   if (obj.id === editId) console.log(obj);
-          // })}
         />
         <Table>
           <tbody>

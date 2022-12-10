@@ -1,6 +1,8 @@
 import React, { useState, useReducer, useEffect } from "react";
 import styled from "styled-components";
 import uuid from "react-uuid";
+import EditActivityPopup from "../components/EditActivityPopup";
+import Activity from "../components/Activity";
 
 const reducer = (state, action) => {
   switch (action.type) {
@@ -27,11 +29,22 @@ const reducer = (state, action) => {
 function Running() {
   const [state, dispatch] = useReducer(reducer, {});
   const [activities, setActivities] = useState([]);
+  //edycja taska
+  const [openEditPopup, setOpenEditPopup] = useState(false);
+  //zmienna po kliknięciu "edytuj" przyjmuje id danej aktywności,
+  //aby po wprowadzeniu zmian w popupie za jej pomocą ustawić, którą aktywność
+  //z listy edytować.
+  const [editId, setEditId] = useState("");
 
   useEffect(() => {
     getItemsFromBackend();
   }, []);
+
+  //komunikacja z backendem
   const sendItemToBackend = (item) => {
+    //wysyłamy item do backendu
+    //wykorzystywane przy dodawaniu aktywności, ale i edycji
+    //backend sam stwierdza czy to edycja czy po prostu dodanie na podstawie id
     fetch("http://localhost:8888/runningActivities", {
       method: "POST",
       body: JSON.stringify(item),
@@ -41,7 +54,7 @@ function Running() {
     });
   };
   const deleteItemFromBackend = (id) => {
-    fetch(`http://localhost:8888/${id}`, {
+    fetch(`http://localhost:8888/runningActivities/${id}`, {
       method: "DELETE",
     });
   };
@@ -50,6 +63,7 @@ function Running() {
       .then((response) => response.json())
       .then((data) => setActivities(data.runningActivities));
   };
+  //obsługa formularza
   const submit = async (e) => {
     e.preventDefault();
 
@@ -70,7 +84,34 @@ function Running() {
       sendItemToBackend(runningActivity);
     }
   };
-
+  const changeInputsValues = (e) => {
+    switch (e.target.name) {
+      case "dateOfActivity":
+        dispatch({
+          type: "setDate",
+          field: e.target.name,
+          payload: e.target.value,
+        });
+        break;
+      case "timeOfActivity":
+        dispatch({
+          type: "setTime",
+          field: e.target.name,
+          payload: e.target.value,
+        });
+        break;
+      case "distanceOfActivity":
+        dispatch({
+          type: "setDistance",
+          field: e.target.name,
+          payload: e.target.value,
+        });
+        break;
+      default:
+        break;
+    }
+    console.log(state);
+  };
   return (
     <Container>
       <h2>Dodaj aktywność</h2>
@@ -79,13 +120,7 @@ function Running() {
           <p>DATA</p>
           <input
             type="date"
-            onChange={(e) => {
-              dispatch({
-                type: "setDate",
-                field: e.target.name,
-                payload: e.target.value,
-              });
-            }}
+            onChange={changeInputsValues}
             name="dateOfActivity"
             defaultValue={state.dateOfActivity}
           />
@@ -94,13 +129,7 @@ function Running() {
           <p>CZAS</p>
           <input
             type="number"
-            onChange={(e) => {
-              dispatch({
-                type: "setTime",
-                field: e.target.name,
-                payload: e.target.value,
-              });
-            }}
+            onChange={changeInputsValues}
             name="timeOfActivity"
             min="0"
             defaultValue={state.timeOfActivity}
@@ -110,13 +139,7 @@ function Running() {
           <p>DYSTANS</p>
           <input
             type="number"
-            onChange={(e) => {
-              dispatch({
-                type: "setDistance",
-                field: e.target.name,
-                payload: e.target.value,
-              });
-            }}
+            onChange={changeInputsValues}
             name="distanceOfActivity"
             min="0"
             defaultValue={state.distanceOfActivity}
@@ -130,6 +153,14 @@ function Running() {
         </div>
       </Form>
       <div>
+        <EditActivityPopup
+          open={openEditPopup}
+          setActivities={setActivities}
+          editId={editId}
+          activities={activities}
+          setOpenEditPopup={setOpenEditPopup}
+          sendItemToBackend={sendItemToBackend}
+        />
         <Table>
           <tbody>
             <tr>
@@ -143,31 +174,18 @@ function Running() {
             </tr>
             {activities.map((item, index) => {
               return (
-                <tr key={item.id}>
-                  <td>{index + 1}</td>
-                  <td>{item.dateOfActivity}</td>
-                  <td>{item.timeOfActivity}</td>
-                  <td>{item.distanceOfActivity}</td>
-                  <td>xxx</td>
-                  <td>xxx</td>
-                  <Operations>
-                    <button
-                      id={item.id}
-                      onClick={(e) => {
-                        const filtered = activities.filter((obj) => {
-                          return obj.id !== e.target.id;
-                        });
-
-                        setActivities(filtered);
-
-                        deleteItemFromBackend(item.id);
-                      }}
-                    >
-                      delete
-                      {/* <ImCross/> */}
-                    </button>
-                  </Operations>
-                </tr>
+                <Activity
+                  key={item.id}
+                  item={item}
+                  index={index}
+                  activities={activities}
+                  setActivities={setActivities}
+                  deleteItemFromBackend={deleteItemFromBackend}
+                  setOpenEditPopup={setOpenEditPopup}
+                  openEditPopup={openEditPopup}
+                  setEditId={setEditId}
+                  sendItemToBackend={sendItemToBackend}
+                />
               );
             })}
           </tbody>
@@ -196,7 +214,10 @@ const Container = styled.div`
     height: 30rem;
     overflow: auto;
   }
+  //ustawiamy aby popup do edytowania się wyświetlał odpowiednio
+  /* position: relative; */
 `;
+
 const Form = styled.form`
   width: 100%;
   height: 15rem;
@@ -256,34 +277,9 @@ const Table = styled.table`
     font-size: 12px;
   }
 
-  th,
-  td {
+  th {
     text-align: left;
     padding: 16px;
     white-space: nowrap;
-  }
-  tr:nth-child(even) {
-    background-color: white;
-  }
-`;
-
-const Operations = styled.td`
-  display: flex;
-  justify-content: right;
-  cursor: pointer;
-  transition: 1s all;
-
-  button {
-    border: none;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    transition: 1s all;
-    padding: 2vh;
-    cursor: pointer;
-  }
-  button:hover {
-    color: red;
   }
 `;

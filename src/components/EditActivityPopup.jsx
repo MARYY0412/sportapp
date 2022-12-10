@@ -30,10 +30,6 @@ function EditActivityPopup({
   setOpenEditPopup,
   sendItemToBackend,
 }) {
-  // let initialState = activities.filter((obj) => {
-  //   if (obj.id === editId) return obj;
-  // });
-
   const [state, dispatch] = useReducer(reducer, {});
   if (!open) return null;
 
