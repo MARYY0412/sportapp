@@ -254,9 +254,6 @@ const Form = styled.form`
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    > input {
-      width: 60%;
-    }
   }
 
   p {
@@ -265,14 +262,16 @@ const Form = styled.form`
   }
   input {
     margin: 1vh;
+    width: 60%;
     background-color: rgba(15, 100, 150, 0.5);
     border: none;
     text-align: center;
-  }
-  //usuniecie strzalek z inputa type=number
-  input::-webkit-inner-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
+
+    //usuniecie strzalek z inputa type=number
+    ::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
   }
   button {
     width: 100%;
