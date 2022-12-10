@@ -114,45 +114,62 @@ function Running() {
   };
   return (
     <Container>
-      <h2>Dodaj aktywność</h2>
-      <Form>
-        <div>
-          <p>DATA</p>
-          <input
-            type="date"
-            onChange={changeInputsValues}
-            name="dateOfActivity"
-            defaultValue={state.dateOfActivity}
-          />
-        </div>
-        <div>
-          <p>CZAS</p>
-          <input
-            type="number"
-            onChange={changeInputsValues}
-            name="timeOfActivity"
-            min="0"
-            defaultValue={state.timeOfActivity}
-          />
-        </div>
-        <div>
-          <p>DYSTANS</p>
-          <input
-            type="number"
-            onChange={changeInputsValues}
-            name="distanceOfActivity"
-            min="0"
-            defaultValue={state.distanceOfActivity}
-          />
-        </div>
-        <div>
-          {" "}
-          <button type="submit" onClick={submit}>
-            dodaj
-          </button>
-        </div>
-      </Form>
-      <div>
+      <Menu>
+        <Form>
+          <h2>Dodaj aktywność</h2>
+          <div>
+            <p>DATA</p>
+            <input
+              type="date"
+              onChange={changeInputsValues}
+              name="dateOfActivity"
+              defaultValue={state.dateOfActivity}
+            />
+          </div>
+          <div>
+            <p>CZAS</p>
+            <input
+              type="number"
+              onChange={changeInputsValues}
+              name="timeOfActivity"
+              min="0"
+              defaultValue={state.timeOfActivity}
+            />
+          </div>
+          <div>
+            <p>DYSTANS</p>
+            <input
+              type="number"
+              onChange={changeInputsValues}
+              name="distanceOfActivity"
+              min="0"
+              defaultValue={state.distanceOfActivity}
+            />
+          </div>
+          <div>
+            {" "}
+            <button type="submit" onClick={submit}>
+              dodaj
+            </button>
+          </div>
+        </Form>
+        <Summary>
+          <h2>Podsumowanie</h2>
+          <div>
+            <p>dystans:</p> <p>xx</p>
+          </div>
+          <div>
+            <p>czas:</p> <p>xx</p>
+          </div>
+          <div>
+            <p>śr. prędkość:</p> <p>xx</p>
+          </div>
+          <div>
+            <p>kalorie:</p> <p>xx</p>
+          </div>
+        </Summary>
+      </Menu>
+      <div className="table-div">
         <EditActivityPopup
           open={openEditPopup}
           setActivities={setActivities}
@@ -201,7 +218,6 @@ const Container = styled.div`
   background-color: rgba(255, 255, 255, 0.8);
   backdrop-filter: blur(2px);
   width: 60%;
-  text-align: center;
 
   padding-top: 1rem;
   font-family: "Quicksand", sans-serif;
@@ -210,36 +226,43 @@ const Container = styled.div`
     width: 90%;
   }
 
-  > div {
-    height: 30rem;
+  .table-div {
     overflow: auto;
+    height: 30rem;
   }
   //ustawiamy aby popup do edytowania się wyświetlał odpowiednio
   /* position: relative; */
 `;
-
-const Form = styled.form`
+const Menu = styled.div`
   width: 100%;
-  height: 15rem;
-  padding: 1vh;
   display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  justify-content: space-evenly;
-
-  @media only screen and (max-width: 1200px) {
+  @media only screen and (max-width: 600px) {
     flex-direction: column;
     align-items: center;
   }
+`;
+const Form = styled.form`
+  width: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: space-evenly;
+  border-right: 1px solid black;
+  @media only screen and (max-width: 600px) {
+    width: 100%;
+    border: none;
+  }
   > div {
-    width: 50%;
+    width: 100%;
+    padding: 0rem 3rem;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     > input {
       height: 3vh;
-      width: 15rem;
+      width: 10rem;
     }
   }
 
@@ -248,7 +271,7 @@ const Form = styled.form`
     text-align: left;
   }
   input {
-    width: 10rem;
+    margin: 1vh;
     background-color: rgba(15, 100, 150, 0.5);
     border: none;
     text-align: center;
@@ -268,11 +291,34 @@ const Form = styled.form`
     padding: 2vh;
   }
 `;
+const Summary = styled.div`
+  width: 50%;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+  @media only screen and (max-width: 600px) {
+    align-items: center;
+    width: 100%;
+    * {
+      margin: 1vh;
+    }
+  }
 
+  > div {
+    display: flex;
+    justify-content: space-evenly;
+    * {
+      width: 8rem;
+    }
+  }
+`;
 const Table = styled.table`
   border-collapse: collapse;
   border-spacing: 0;
   width: 100%;
+  overflow: auto;
   @media only screen and (max-width: 900px) {
     font-size: 12px;
   }
