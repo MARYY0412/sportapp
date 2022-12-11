@@ -280,7 +280,7 @@ const Form = styled.form`
     background-color: rgba(15, 100, 150, 0.5);
     letter-spacing: 3px;
     font-size: 1rem;
-    padding: 2vh;
+    padding: 1vh;
   }
 `;
 const Summary = styled.div`

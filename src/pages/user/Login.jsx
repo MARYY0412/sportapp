@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-import { Link } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 
 //firebase
 import { SignInWithGoogle } from "./../../Firebase";
@@ -9,7 +9,9 @@ function Login() {
   const [password, setPassword] = useState("");
 
   const [error, setError] = useState("");
-  // const [isValid, setIsValid] = useState(false);
+  const [isValid, setIsValid] = useState(false);
+
+  const navigate = useNavigate();
 
   const submit = () => {
     fetch("http://localhost:8888/login", {
@@ -27,7 +29,12 @@ function Login() {
     })
       .then((res) => res.json())
       .then((data) => {
-        console.log(data, "UserLogin");
+        if (data.status == "ok") {
+          alert("login successful");
+          localStorage.setItem("token", data.data);
+          navigate("/profile");
+          console.log(data.data);
+        }
       });
   };
 

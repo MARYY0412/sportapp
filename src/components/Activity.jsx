@@ -18,7 +18,7 @@ function Activity({
       <td>{item.timeOfActivity}</td>
       <td>{item.distanceOfActivity}</td>
       <td>xxx</td>
-      <td>xxx</td>
+      <td>{item.speedOfActivity}</td>
       <Operations>
         <button
           id={item.id}
