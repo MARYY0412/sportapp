@@ -1,7 +1,8 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 
 function Profile() {
+  const [user, setUser] = useState({});
   useEffect(() => {
     fetch("http://localhost:8888/userData", {
       method: "POST",
@@ -18,11 +19,13 @@ function Profile() {
       .then((res) => res.json())
       .then((data) => {
         console.log(data, "userData");
+        setUser(data.data);
       });
   }, []);
   return (
     <Container>
-      <p>{}</p>
+      <p>{user.username}</p>
+      <p>{user.email}</p>
     </Container>
   );
 }

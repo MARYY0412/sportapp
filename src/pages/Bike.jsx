@@ -1,9 +1,9 @@
-import React, { useState, useReducer, useEffect } from "react";
+import React, { useState, useReducer, useEffect, useMemo } from "react";
 import styled from "styled-components";
 import uuid from "react-uuid";
 import EditActivityPopup from "../components/EditActivityPopup";
 import Activity from "../components/Activity";
-
+import { BiSortAlt2 } from "react-icons/bi";
 const reducer = (state, action) => {
   switch (action.type) {
     case "setDate":
@@ -36,7 +36,17 @@ function Bike() {
   //z listy edytować.
   const [editId, setEditId] = useState("");
   useEffect(() => {
-    getItemsFromBackend();
+    // setActivities(getItemsFromBackend().data.bikeActivities);
+
+    async function fetchMyAPI() {
+      let data = await fetch("http://127.0.0.1:8888/bikeActivities");
+      let response = await data.json();
+
+      console.log(response.bikeActivities);
+      setActivities(response.bikeActivities);
+    }
+
+    fetchMyAPI();
   }, []);
   //komunikacja z backendem
   const sendItemToBackend = (item) => {
@@ -53,11 +63,11 @@ function Bike() {
       method: "DELETE",
     });
   };
-  const getItemsFromBackend = async () => {
-    return fetch("http://127.0.0.1:8888/bikeActivities")
-      .then((res) => res.json())
-      .then((data) => setActivities(data.bikeActivities));
-  };
+  // const getItemsFromBackend = async () => {
+  //   return fetch("http://127.0.0.1:8888/bikeActivities")
+  //     .then((res) => res.json())
+  //     .then((data) => setActivities(data.bikeActivities));
+  // };
   //obsługa formularza
   const submit = async (e) => {
     e.preventDefault();
@@ -106,6 +116,16 @@ function Bike() {
         break;
     }
   };
+  //sortowanie aktywności
+  const sortResults = (e) => {
+    //https://dev.to/ramonak/react-how-to-dynamically-sort-an-array-of-objects-using-the-dropdown-with-react-hooks-195p
+    let array = activities.sort(
+      (a, b) => a.distanceOfActivity - b.distanceOfActivity
+    );
+    setActivities(array);
+    console.log(array);
+  };
+
   return (
     <Container>
       <Menu>
@@ -176,11 +196,46 @@ function Bike() {
           <tbody>
             <tr>
               <th>ID</th>
-              <th>DATA</th>
-              <th>CZAS</th>
-              <th>DYSTANS</th>
-              <th>KALORIE</th>
-              <th>ŚR. TEMPO</th>
+              <th>
+                DATA
+                <BiSortAlt2
+                  className="sort-icons"
+                  id="date"
+                  onClick={sortResults}
+                />
+              </th>
+              <th>
+                CZAS
+                <BiSortAlt2
+                  className="sort-icons"
+                  id="time"
+                  onClick={sortResults}
+                />
+              </th>
+              <th>
+                DYSTANS
+                <BiSortAlt2
+                  className="sort-icons"
+                  id="distance"
+                  onClick={sortResults}
+                />
+              </th>
+              <th>
+                KALORIE
+                <BiSortAlt2
+                  className="sort-icons"
+                  id="calories"
+                  onClick={sortResults}
+                />
+              </th>
+              <th>
+                ŚR. TEMPO
+                <BiSortAlt2
+                  className="sort-icons"
+                  id="avgspeed"
+                  onClick={sortResults}
+                />
+              </th>
               <th>OPERATIONS</th>
             </tr>
             {activities.map((item, index) => {
@@ -199,6 +254,7 @@ function Bike() {
                 />
               );
             })}
+            {/* {renderTableData} */}
           </tbody>
         </Table>
       </div>
@@ -321,5 +377,12 @@ const Table = styled.table`
     text-align: left;
     padding: 16px;
     white-space: nowrap;
+
+    .sort-icons {
+      font-size: 16px;
+      :hover {
+        cursor: pointer;
+      }
+    }
   }
 `;
