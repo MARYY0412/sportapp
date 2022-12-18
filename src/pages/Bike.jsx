@@ -1,11 +1,13 @@
-import React, { useState, useReducer, useEffect, useMemo } from "react";
+import React, { useState, useReducer, useEffect } from "react";
 import styled from "styled-components";
 import uuid from "react-uuid";
 import EditActivityPopup from "../components/EditActivityPopup";
 import Activity from "../components/Activity";
 import { BiSortAlt2 } from "react-icons/bi";
+import { sortReducer, sortReducerInitState } from "../reducers/sortReducer";
 const reducer = (state, action) => {
   switch (action.type) {
+    //state do kontrolowania inputów
     case "setDate":
       return {
         ...state,
@@ -28,6 +30,10 @@ const reducer = (state, action) => {
 
 function Bike() {
   const [state, dispatch] = useReducer(reducer, {});
+  const [sortState, dispatchSortState] = useReducer(
+    sortReducer,
+    sortReducerInitState
+  );
   const [activities, setActivities] = useState([]);
   //edycja taska
   const [openEditPopup, setOpenEditPopup] = useState(false);
@@ -35,18 +41,16 @@ function Bike() {
   //aby po wprowadzeniu zmian w popupie za jej pomocą ustawić, którą aktywność
   //z listy edytować.
   const [editId, setEditId] = useState("");
+  //
   useEffect(() => {
-    // setActivities(getItemsFromBackend().data.bikeActivities);
-
-    async function fetchMyAPI() {
+    async function fetchBackend() {
       let data = await fetch("http://127.0.0.1:8888/bikeActivities");
       let response = await data.json();
 
-      console.log(response.bikeActivities);
       setActivities(response.bikeActivities);
     }
 
-    fetchMyAPI();
+    fetchBackend();
   }, []);
   //komunikacja z backendem
   const sendItemToBackend = (item) => {
@@ -117,13 +121,94 @@ function Bike() {
     }
   };
   //sortowanie aktywności
-  const sortResults = (e) => {
-    //https://dev.to/ramonak/react-how-to-dynamically-sort-an-array-of-objects-using-the-dropdown-with-react-hooks-195p
-    let array = activities.sort(
-      (a, b) => a.distanceOfActivity - b.distanceOfActivity
-    );
-    setActivities(array);
-    console.log(array);
+  const sortResults = async (e) => {
+    //without promise
+    // let copyOfActivities = [...activities];
+    // let sorted;
+    // if (e.target.id === "distanceOfActivity") {
+    //   if (sortState.distanceSort) {
+    //     sorted = copyOfActivities.sort(
+    //       (a, b) => a.distanceOfActivity - b.distanceOfActivity
+    //     );
+    //   } else {
+    //     sorted = copyOfActivities.sort(
+    //       (a, b) => b.distanceOfActivity - a.distanceOfActivity
+    //     );
+    //   }
+    //   dispatchSortState({ type: "distanceSort" });
+    // } else if (e.target.id === "timeOfActivity") {
+    //   if (sortState.timeSort) {
+    //     sorted = copyOfActivities.sort(
+    //       (a, b) => a.timeOfActivity - b.timeOfActivity
+    //     );
+    //   } else {
+    //     sorted = copyOfActivities.sort(
+    //       (a, b) => b.timeOfActivity - a.timeOfActivity
+    //     );
+    //   }
+    //   dispatchSortState({ type: "timeSort" });
+    // } else if (e.target.id === "dateOfActivity") {
+    //   if (sortState.dateSort) {
+    //     sorted = copyOfActivities.sort(
+    //       (a, b) => new Date(a.dateOfActivity) - new Date(b.dateOfActivity)
+    //     );
+    //   } else {
+    //     sorted = copyOfActivities.sort(
+    //       (a, b) => new Date(b.dateOfActivity) - new Date(a.dateOfActivity)
+    //     );
+    //   }
+    //   dispatchSortState({ type: "dateSort" });
+    // }
+    // setActivities(sorted);
+
+    //with promise
+    let copyOfActivities = [...activities];
+
+    const myPromise = new Promise(function (resolve, reject) {
+      let sorted;
+      if (e.target.id === "distanceOfActivity") {
+        if (sortState.distanceSort) {
+          sorted = copyOfActivities.sort(
+            (a, b) => a.distanceOfActivity - b.distanceOfActivity
+          );
+        } else {
+          sorted = copyOfActivities.sort(
+            (a, b) => b.distanceOfActivity - a.distanceOfActivity
+          );
+        }
+        dispatchSortState({ type: "distanceSort" });
+      } else if (e.target.id === "timeOfActivity") {
+        if (sortState.timeSort) {
+          sorted = copyOfActivities.sort(
+            (a, b) => a.timeOfActivity - b.timeOfActivity
+          );
+        } else {
+          sorted = copyOfActivities.sort(
+            (a, b) => b.timeOfActivity - a.timeOfActivity
+          );
+        }
+        dispatchSortState({ type: "timeSort" });
+      } else if (e.target.id === "dateOfActivity") {
+        if (sortState.dateSort) {
+          sorted = copyOfActivities.sort(
+            (a, b) => new Date(a.dateOfActivity) - new Date(b.dateOfActivity)
+          );
+        } else {
+          sorted = copyOfActivities.sort(
+            (a, b) => new Date(b.dateOfActivity) - new Date(a.dateOfActivity)
+          );
+        }
+        dispatchSortState({ type: "dateSort" });
+      }
+      resolve(sorted);
+      reject("chujnia");
+    });
+
+    myPromise
+      .then((data) => setActivities(data))
+      .catch((error) => console.log("error"));
+    // console.log(activities);
+    // setActivities(sorted);
   };
 
   return (
@@ -200,7 +285,7 @@ function Bike() {
                 DATA
                 <BiSortAlt2
                   className="sort-icons"
-                  id="date"
+                  id="dateOfActivity"
                   onClick={sortResults}
                 />
               </th>
@@ -208,7 +293,7 @@ function Bike() {
                 CZAS
                 <BiSortAlt2
                   className="sort-icons"
-                  id="time"
+                  id="timeOfActivity"
                   onClick={sortResults}
                 />
               </th>
@@ -216,26 +301,12 @@ function Bike() {
                 DYSTANS
                 <BiSortAlt2
                   className="sort-icons"
-                  id="distance"
+                  id="distanceOfActivity"
                   onClick={sortResults}
                 />
               </th>
-              <th>
-                KALORIE
-                <BiSortAlt2
-                  className="sort-icons"
-                  id="calories"
-                  onClick={sortResults}
-                />
-              </th>
-              <th>
-                ŚR. TEMPO
-                <BiSortAlt2
-                  className="sort-icons"
-                  id="avgspeed"
-                  onClick={sortResults}
-                />
-              </th>
+              <th>KALORIE</th>
+              <th>ŚR. TEMPO</th>
               <th>OPERATIONS</th>
             </tr>
             {activities.map((item, index) => {
