@@ -5,31 +5,12 @@ import EditActivityPopup from "../components/EditActivityPopup";
 import Activity from "../components/Activity";
 import { BiSortAlt2 } from "react-icons/bi";
 import { sortReducer, sortReducerInitState } from "../reducers/sortReducer";
-const reducer = (state, action) => {
-  switch (action.type) {
-    //state do kontrolowania inputów
-    case "setDate":
-      return {
-        ...state,
-        [action.field]: action.payload,
-      };
-    case "setTime":
-      return {
-        ...state,
-        [action.field]: action.payload,
-      };
-    case "setDistance":
-      return {
-        ...state,
-        [action.field]: action.payload,
-      };
-    default:
-      return state;
-  }
-};
-
+import { inputReducer, inputReducerInitState } from "../reducers/inputReducer";
 function Bike() {
-  const [state, dispatch] = useReducer(reducer, {});
+  const [inputState, dispatchInputState] = useReducer(
+    inputReducer,
+    inputReducerInitState
+  );
   const [sortState, dispatchSortState] = useReducer(
     sortReducer,
     sortReducerInitState
@@ -67,27 +48,21 @@ function Bike() {
       method: "DELETE",
     });
   };
-  // const getItemsFromBackend = async () => {
-  //   return fetch("http://127.0.0.1:8888/bikeActivities")
-  //     .then((res) => res.json())
-  //     .then((data) => setActivities(data.bikeActivities));
-  // };
-  //obsługa formularza
   const submit = async (e) => {
     e.preventDefault();
 
     if (
-      state.dateOfActivity === undefined ||
-      state.timeOfActivity === undefined ||
-      state.distanceOfActivity === undefined
+      inputState.dateOfActivity === undefined ||
+      inputState.timeOfActivity === undefined ||
+      inputState.distanceOfActivity === undefined
     )
       alert("Uzupełnij wszystkie pola!");
     else {
       const bikeActivity = {
         id: uuid(),
-        timeOfActivity: state.timeOfActivity,
-        dateOfActivity: state.dateOfActivity,
-        distanceOfActivity: state.distanceOfActivity,
+        timeOfActivity: inputState.timeOfActivity,
+        dateOfActivity: inputState.dateOfActivity,
+        distanceOfActivity: inputState.distanceOfActivity,
       };
       setActivities((current) => [...current, bikeActivity]);
       sendItemToBackend(bikeActivity);
@@ -96,21 +71,21 @@ function Bike() {
   const changeInputsValues = (e) => {
     switch (e.target.name) {
       case "dateOfActivity":
-        dispatch({
+        dispatchInputState({
           type: "setDate",
           field: e.target.name,
           payload: e.target.value,
         });
         break;
       case "timeOfActivity":
-        dispatch({
+        dispatchInputState({
           type: "setTime",
           field: e.target.name,
           payload: e.target.value,
         });
         break;
       case "distanceOfActivity":
-        dispatch({
+        dispatchInputState({
           type: "setDistance",
           field: e.target.name,
           payload: e.target.value,
@@ -121,96 +96,52 @@ function Bike() {
     }
   };
   //sortowanie aktywności
-  const sortResults = async (e) => {
-    //without promise
-    // let copyOfActivities = [...activities];
-    // let sorted;
-    // if (e.target.id === "distanceOfActivity") {
-    //   if (sortState.distanceSort) {
-    //     sorted = copyOfActivities.sort(
-    //       (a, b) => a.distanceOfActivity - b.distanceOfActivity
-    //     );
-    //   } else {
-    //     sorted = copyOfActivities.sort(
-    //       (a, b) => b.distanceOfActivity - a.distanceOfActivity
-    //     );
-    //   }
-    //   dispatchSortState({ type: "distanceSort" });
-    // } else if (e.target.id === "timeOfActivity") {
-    //   if (sortState.timeSort) {
-    //     sorted = copyOfActivities.sort(
-    //       (a, b) => a.timeOfActivity - b.timeOfActivity
-    //     );
-    //   } else {
-    //     sorted = copyOfActivities.sort(
-    //       (a, b) => b.timeOfActivity - a.timeOfActivity
-    //     );
-    //   }
-    //   dispatchSortState({ type: "timeSort" });
-    // } else if (e.target.id === "dateOfActivity") {
-    //   if (sortState.dateSort) {
-    //     sorted = copyOfActivities.sort(
-    //       (a, b) => new Date(a.dateOfActivity) - new Date(b.dateOfActivity)
-    //     );
-    //   } else {
-    //     sorted = copyOfActivities.sort(
-    //       (a, b) => new Date(b.dateOfActivity) - new Date(a.dateOfActivity)
-    //     );
-    //   }
-    //   dispatchSortState({ type: "dateSort" });
-    // }
-    // setActivities(sorted);
-
-    //with promise
-    let copyOfActivities = [...activities];
-
-    const myPromise = new Promise(function (resolve, reject) {
-      let sorted;
-      if (e.target.id === "distanceOfActivity") {
-        if (sortState.distanceSort) {
-          sorted = copyOfActivities.sort(
+  const sortResults = (e) => {
+    if (e.target.id === "distanceOfActivity") {
+      if (sortState.distanceSort) {
+        setActivities(
+          [...activities].sort(
             (a, b) => a.distanceOfActivity - b.distanceOfActivity
-          );
-        } else {
-          sorted = copyOfActivities.sort(
+          )
+        );
+      } else {
+        setActivities(
+          [...activities].sort(
             (a, b) => b.distanceOfActivity - a.distanceOfActivity
-          );
-        }
-        dispatchSortState({ type: "distanceSort" });
-      } else if (e.target.id === "timeOfActivity") {
-        if (sortState.timeSort) {
-          sorted = copyOfActivities.sort(
-            (a, b) => a.timeOfActivity - b.timeOfActivity
-          );
-        } else {
-          sorted = copyOfActivities.sort(
-            (a, b) => b.timeOfActivity - a.timeOfActivity
-          );
-        }
-        dispatchSortState({ type: "timeSort" });
-      } else if (e.target.id === "dateOfActivity") {
-        if (sortState.dateSort) {
-          sorted = copyOfActivities.sort(
-            (a, b) => new Date(a.dateOfActivity) - new Date(b.dateOfActivity)
-          );
-        } else {
-          sorted = copyOfActivities.sort(
-            (a, b) => new Date(b.dateOfActivity) - new Date(a.dateOfActivity)
-          );
-        }
-        dispatchSortState({ type: "dateSort" });
+          )
+        );
       }
-      resolve(sorted);
-      reject("chujnia");
-    });
+      dispatchSortState({ type: "distanceSort" });
+    } else if (e.target.id === "timeOfActivity") {
+      if (sortState.timeSort) {
+        setActivities(
+          [...activities].sort((a, b) => a.timeOfActivity - b.timeOfActivity)
+        );
+      } else {
+        setActivities(
+          [...activities].sort((a, b) => b.timeOfActivity - a.timeOfActivity)
+        );
+      }
+      dispatchSortState({ type: "timeSort" });
+    } else if (e.target.id === "dateOfActivity") {
+      if (sortState.dateSort) {
+        setActivities(
+          [...activities].sort(
+            (a, b) => new Date(a.dateOfActivity) - new Date(b.dateOfActivity)
+          )
+        );
+      } else {
+        setActivities(
+          [...activities].sort(
+            (a, b) => new Date(b.dateOfActivity) - new Date(a.dateOfActivity)
+          )
+        );
+      }
+      dispatchSortState({ type: "dateSort" });
+    }
 
-    myPromise
-      .then((data) => setActivities(data))
-      .catch((error) => console.log("error"));
-    // console.log(activities);
-    // setActivities(sorted);
+    // setActivities(sorted === undefined ? activities : sorted);
   };
-
   return (
     <Container>
       <Menu>
@@ -222,7 +153,7 @@ function Bike() {
               type="date"
               onChange={changeInputsValues}
               name="dateOfActivity"
-              defaultValue={state.dateOfActivity}
+              defaultValue={inputState.dateOfActivity}
             />
           </div>
           <div>
@@ -232,7 +163,7 @@ function Bike() {
               onChange={changeInputsValues}
               name="timeOfActivity"
               min="0"
-              defaultValue={state.timeOfActivity}
+              defaultValue={inputState.timeOfActivity}
             />
           </div>
           <div>
@@ -242,7 +173,7 @@ function Bike() {
               onChange={changeInputsValues}
               name="distanceOfActivity"
               min="0"
-              defaultValue={state.distanceOfActivity}
+              defaultValue={inputState.distanceOfActivity}
             />
           </div>
           <div>
@@ -309,7 +240,7 @@ function Bike() {
               <th>ŚR. TEMPO</th>
               <th>OPERATIONS</th>
             </tr>
-            {activities.map((item, index) => {
+            {activities?.map((item, index) => {
               return (
                 <Activity
                   key={item.id}
