@@ -1,12 +1,12 @@
-import React from "react";
+import React, { useReducer } from "react";
 import styled from "styled-components";
 import uuid from "react-uuid";
-function AddActivity({
-  inputState,
-  dispatchInputState,
-  setActivities,
-  sendItemToBackend,
-}) {
+import { inputReducer, inputReducerInitState } from "../reducers/inputReducer";
+function AddActivity({ setActivities, sendItemToBackend }) {
+  const [inputState, dispatchInputState] = useReducer(
+    inputReducer,
+    inputReducerInitState
+  );
   const submit = async (e) => {
     e.preventDefault();
 

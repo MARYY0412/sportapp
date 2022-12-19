@@ -23,7 +23,7 @@ const reducer = (state, action) => {
   }
 };
 function EditActivityPopup({
-  open,
+  openEditPopup,
   setActivities,
   activities,
   editId,
@@ -31,7 +31,7 @@ function EditActivityPopup({
   sendItemToBackend,
 }) {
   const [state, dispatch] = useReducer(reducer, {});
-  if (!open) return null;
+  if (!openEditPopup) return null;
 
   const closePopup = () => {
     setOpenEditPopup(false);
