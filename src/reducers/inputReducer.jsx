@@ -2,6 +2,7 @@ export const inputReducerInitState = {
   dateOfActivity: "",
   timeOfActivity: 0,
   distanceOfActivity: 0,
+  speedOfActivity: 0,
 };
 
 export const inputReducer = (state, action) => {

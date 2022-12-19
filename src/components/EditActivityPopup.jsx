@@ -1,27 +1,9 @@
 import React, { useReducer } from "react";
 import styled from "styled-components";
 import { ImCross } from "react-icons/im";
-const reducer = (state, action) => {
-  switch (action.type) {
-    case "setDate":
-      return {
-        ...state,
-        [action.field]: [action.payload],
-      };
-    case "setTime":
-      return {
-        ...state,
-        [action.field]: [action.payload],
-      };
-    case "setDistance":
-      return {
-        ...state,
-        [action.field]: [action.payload],
-      };
-    default:
-      return state;
-  }
-};
+import { inputReducer } from "../reducers/inputReducer";
+import { useEffect } from "react";
+
 function EditActivityPopup({
   openEditPopup,
   setActivities,
@@ -30,7 +12,37 @@ function EditActivityPopup({
   setOpenEditPopup,
   sendItemToBackend,
 }) {
-  const [state, dispatch] = useReducer(reducer, {});
+  //znajdz obiekt po id
+  const x = activities.find((item) => {
+    return item.id === editId;
+  });
+  // console.log(item.dateOfActivity);
+  // console.log(item.timeOfActivity);
+  // console.log(item.distanceOfActivity);
+
+  const [state, dispatch] = useReducer(inputReducer, {
+    timeOfActivity: x === undefined ? 0 : x.timeOfActivity,
+    dateOfActivity: x === undefined ? 0 : x.dateOfActivity,
+    distanceOfActivity: x === undefined ? 0 : x.distanceOfActivity,
+  });
+  // useEffect(() => {
+  //   dispatch({
+  //     type: "setTime",
+  //     field: "timeOfActivity",
+  //     payload: obj.timeOfActivity,
+  //   });
+  //   dispatch({
+  //     type: "setDate",
+  //     field: "dateOfActivity",
+  //     payload: obj.dateOfActivity,
+  //   });
+  //   dispatch({
+  //     type: "setDistance",
+  //     field: "distanceOfActivity",
+  //     payload: obj.distanceOfActivity,
+  //   });
+  // }, [])
+
   if (!openEditPopup) return null;
 
   const closePopup = () => {
@@ -57,6 +69,7 @@ function EditActivityPopup({
       payload: e.target.value,
     });
   };
+
   const submit = (e) => {
     e.preventDefault();
     let array = activities.map((obj) => {
@@ -66,6 +79,11 @@ function EditActivityPopup({
           timeOfActivity: state.timeOfActivity,
           dateOfActivity: state.dateOfActivity,
           distanceOfActivity: state.distanceOfActivity,
+          speedOfActivity: (
+            state.distanceOfActivity /
+            1000 /
+            (state.timeOfActivity / 60)
+          ).toFixed(2),
         };
       else return obj;
     });
@@ -91,7 +109,7 @@ function EditActivityPopup({
           type="date"
           name="dateOfActivity"
           onChange={setDate}
-          defaultValue={state.dateOfActivity}
+          value={state.dateOfActivity}
         />
         <label htmlFor="time">czas</label>
         <input
@@ -100,7 +118,7 @@ function EditActivityPopup({
           min="0"
           placeholder="Podaj czas w minutach"
           onChange={setTime}
-          defaultValue={state.timeOfActivity}
+          value={state.timeOfActivity}
         />
         <label htmlFor="distance">dystans</label>
         <input
@@ -109,7 +127,7 @@ function EditActivityPopup({
           min="0"
           placeholder="Podaj dystans w metrach"
           onChange={setDistance}
-          defaultValue={state.distanceOfActivity}
+          value={state.distanceOfActivity}
         />
         <button onClick={submit}>edytuj aktywność</button>
       </form>

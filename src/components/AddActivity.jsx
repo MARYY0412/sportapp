@@ -22,6 +22,11 @@ function AddActivity({ setActivities, sendItemToBackend }) {
         timeOfActivity: inputState.timeOfActivity,
         dateOfActivity: inputState.dateOfActivity,
         distanceOfActivity: inputState.distanceOfActivity,
+        speedOfActivity: (
+          inputState.distanceOfActivity /
+          1000 /
+          (inputState.timeOfActivity / 60)
+        ).toFixed(2),
       };
       setActivities((current) => [...current, bikeActivity]);
       sendItemToBackend(bikeActivity);

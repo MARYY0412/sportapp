@@ -35,6 +35,7 @@ function Activity({
           onClick={(e) => {
             setOpenEditPopup(!openEditPopup);
             setEditId(item.id);
+            console.log(item.id);
           }}
         >
           edytuj
