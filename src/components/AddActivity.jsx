@@ -11,9 +11,9 @@ function AddActivity({ setActivities, sendItemToBackend }) {
     e.preventDefault();
 
     if (
-      inputState.dateOfActivity === undefined ||
-      inputState.timeOfActivity === undefined ||
-      inputState.distanceOfActivity === undefined
+      inputState.dateOfActivity === "" ||
+      inputState.timeOfActivity === 0 ||
+      inputState.distanceOfActivity === 0
     )
       alert("Uzupełnij wszystkie pola!");
     else {

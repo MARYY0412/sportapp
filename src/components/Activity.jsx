@@ -9,8 +9,15 @@ function Activity({
   setOpenEditPopup,
   openEditPopup,
   setEditId,
-  sendItemToBackend,
 }) {
+  const deleteItem = (e) => {
+    const filtered = activities.filter((obj) => {
+      return obj.id !== e.target.id;
+    });
+
+    setActivities(filtered);
+    deleteItemFromBackend(item.id);
+  };
   return (
     <Item>
       <td>{index + 1}</td>
@@ -20,18 +27,7 @@ function Activity({
       <td>xxx</td>
       <td>{item.speedOfActivity}</td>
       <Operations>
-        <button
-          id={item.id}
-          onClick={(e) => {
-            const filtered = activities.filter((obj) => {
-              return obj.id !== e.target.id;
-            });
-
-            setActivities(filtered);
-
-            deleteItemFromBackend(item.id);
-          }}
-        >
+        <button id={item.id} onClick={deleteItem}>
           usuń
         </button>
         <button

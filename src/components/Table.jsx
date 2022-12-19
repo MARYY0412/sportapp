@@ -75,7 +75,7 @@ function Table({
     }
 
     fetchBackend();
-  }, []);
+  }, [setActivities]);
   return (
     <Container>
       <tbody>
@@ -124,7 +124,6 @@ function Table({
             />
           );
         })}
-        {/* {renderTableData} */}
       </tbody>
     </Container>
   );
