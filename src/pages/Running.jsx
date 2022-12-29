@@ -1,7 +1,6 @@
 import React, { useState, useReducer, useEffect } from "react";
 import styled from "styled-components";
 import uuid from "react-uuid";
-import EditActivityPopup from "../components/EditActivityPopup";
 import Activity from "../components/Activity";
 
 const reducer = (state, action) => {
@@ -170,14 +169,6 @@ function Running() {
         </Summary>
       </Menu>
       <div className="table-div">
-        <EditActivityPopup
-          open={openEditPopup}
-          setActivities={setActivities}
-          editId={editId}
-          activities={activities}
-          setOpenEditPopup={setOpenEditPopup}
-          sendItemToBackend={sendItemToBackend}
-        />
         <Table>
           <tbody>
             <tr>

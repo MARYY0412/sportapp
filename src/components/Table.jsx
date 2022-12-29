@@ -4,13 +4,7 @@ import Activity from "./Activity";
 import { BiSortAlt2 } from "react-icons/bi";
 
 import { sortReducer, sortReducerInitState } from "../reducers/sortReducer";
-function Table({
-  activities,
-  setActivities,
-  openEditPopup,
-  setOpenEditPopup,
-  setEditId,
-}) {
+function Table({ activities, setActivities, open, setOpen, setEditId }) {
   const [sortState, dispatchSortState] = useReducer(
     sortReducer,
     sortReducerInitState
@@ -118,8 +112,8 @@ function Table({
               activities={activities}
               setActivities={setActivities}
               deleteItemFromBackend={deleteItemFromBackend}
-              setOpenEditPopup={setOpenEditPopup}
-              openEditPopup={openEditPopup}
+              open={open}
+              setOpen={setOpen}
               setEditId={setEditId}
             />
           );

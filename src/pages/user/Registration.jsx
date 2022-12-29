@@ -174,7 +174,7 @@ const Container = styled.div`
 
     input {
       text-align: center;
-      height: 5vh;
+      height: 3vh;
       background-color: rgba(15, 100, 150, 0.5);
       transition: 2s all;
       border: none;

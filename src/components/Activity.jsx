@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 function Activity({
   item,
@@ -6,8 +6,8 @@ function Activity({
   activities,
   setActivities,
   deleteItemFromBackend,
-  setOpenEditPopup,
-  openEditPopup,
+  open,
+  setOpen,
   setEditId,
 }) {
   const deleteItem = (e) => {
@@ -33,9 +33,9 @@ function Activity({
         <button
           id={item.id}
           onClick={(e) => {
-            setOpenEditPopup(!openEditPopup);
-            setEditId(item.id);
             console.log(item.id);
+            setOpen(!open);
+            setEditId(item.id);
           }}
         >
           edytuj

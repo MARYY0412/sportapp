@@ -2,7 +2,7 @@ import React from "react";
 import styled from "styled-components";
 function Summary() {
   return (
-    <Container>
+    <Box>
       <h2>Podsumowanie</h2>
       <div>
         <p>dystans:</p> <p>xx</p>
@@ -16,13 +16,13 @@ function Summary() {
       <div>
         <p>kalorie:</p> <p>xx</p>
       </div>
-    </Container>
+    </Box>
   );
 }
 
 export default Summary;
 
-const Container = styled.div`
+const Box = styled.div`
   width: 50%;
   text-align: center;
   display: flex;
